@@ -1,5 +1,6 @@
 package com.example.snapfine
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -29,6 +30,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var userNameTextView: TextView
     private lateinit var plus_img: ImageView
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
