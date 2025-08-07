@@ -8,18 +8,21 @@
     android:background="@color/brightGlassBlue"
     android:fitsSystemWindows="false"
     >
+
+
+
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawerlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".HomeActivity">
 
+
         <!-- Main Screen -->
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <include layout="@layout/activity_mainhome" />
-
 
             <FrameLayout
                 android:id="@+id/fragment_container"
@@ -73,7 +76,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
         <!-- Drawer Menu -->
         <LinearLayout
             android:id="@+id/custom_drawer"
@@ -96,9 +98,6 @@
         </LinearLayout>
 
     </androidx.drawerlayout.widget.DrawerLayout>
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

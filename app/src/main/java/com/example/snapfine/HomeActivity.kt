@@ -14,7 +14,9 @@ import android.graphics.Color
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -23,130 +25,127 @@ import com.google.firebase.firestore.FirebaseFirestore
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
-    private lateinit var buttonDrawerToggle: ImageButton
-    private lateinit var listView: ListView
     private lateinit var logoutButton: Button
-    private lateinit var headerView: View
-    private lateinit var userNameTextView: TextView
-    private lateinit var plus_img: ImageView
+    private lateinit var listView: ListView
+    val homeFragment = HomeFragment()
+    val historyFragment = HistoryFragment()
+    val profileFragment = ProfileFragment()
+
+    var activeFragment: Fragment = homeFragment
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-
-        val cameraCardView = findViewById<CardView>(R.id.card_camera)
-        val galleryCardView = findViewById<CardView>(R.id.card_gallery)
-        val myComplaintsCardView = findViewById<CardView>(R.id.mycomplaints)
-        val myViolationsCardView = findViewById<CardView>(R.id.myviolations)
-        plus_img = findViewById(R.id.plus_img)
+        drawerLayout = findViewById(R.id.drawerlayout)
+        val plus_img = findViewById<ImageView>(R.id.plus_img)
+        listView = findViewById(R.id.drawer_menu_list)
+        logoutButton = findViewById(R.id.logout_btn_drawer)
 
         plus_img.setOnClickListener(){
             startActivity(Intent(this,CameraActivity::class.java))
         }
 
+        updateUserNameInDrawer()
 
+        // Navigation drawer items and adapter
+        val drawerItems = arrayOf(
+            "My Cases",
+            "Your Complaints",
+            "Report Violation",
+            "Pay Fines",
+            "Contact",
+            "FAQs",
+            "Privacy Policy"
+        )
 
-        drawerLayout = findViewById(R.id.drawerlayout)
-        buttonDrawerToggle = findViewById(R.id.buttondrawertoggel)
-        listView = findViewById(R.id.drawer_menu_list)  // Make sure your ListView has this ID
-        logoutButton = findViewById(R.id.logout_btn_drawer)  // Make sure the logout button has this ID
-
-        buttonDrawerToggle.setOnClickListener {
-            val drawerContainer: View = findViewById(R.id.custom_drawer)
-            drawerLayout.openDrawer(drawerContainer)
-        }
-
-
-        // Handle navigation menu clicks
-        val drawerItems = arrayOf("My Cases", "Your Complaints","Report Violation", "Pay Fines", "Contact", "FAQs", "Privacy Policy")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, drawerItems)
+        val adapter = ArrayAdapter(applicationContext, android.R.layout.simple_list_item_1, drawerItems)
         listView.adapter = adapter
 
         listView.setOnItemClickListener { _, _, position, _ ->
             when (position) {
                 0 -> {
-                    startActivity(Intent(this, MyCasesActivity::class.java))
-                    // Start activity for my cases
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, HistoryFragment())
+                        .addToBackStack("HistoryFragment")
+                        .commit()
                 }
-                1 -> {
-                    startActivity(Intent(this, MyComplaintsActivity::class.java))
-                }
-                2 -> {
-                    startActivity(Intent(this, CameraActivity::class.java))
-
-                }
-                3 -> {
-                    Toast.makeText(this, "Pay Fines Clicked", Toast.LENGTH_SHORT).show()
-                    // Start activity for paying fines
-                }
-                4 -> {
-                    Toast.makeText(this, "Contact Clicked", Toast.LENGTH_SHORT).show()
-                    // Start activity for contact
-                }
-                5 -> {
-                    Toast.makeText(this, "FAQs Clicked", Toast.LENGTH_SHORT).show()
-                    // Start activity for FAQs
-                }
-                6 -> {
-                    Toast.makeText(this, "Privacy Policy Clicked", Toast.LENGTH_SHORT).show()
-                    // Start activity for privacy policy
-                }
+                1 -> startActivity(Intent(applicationContext, MyComplaintsActivity::class.java))
+                2 -> startActivity(Intent(applicationContext, CameraActivity::class.java))
+                3 -> Toast.makeText(applicationContext, "Pay Fines Clicked", Toast.LENGTH_SHORT).show()
+                4 -> Toast.makeText(applicationContext, "Contact Clicked", Toast.LENGTH_SHORT).show()
+                5 -> Toast.makeText(applicationContext, "FAQs Clicked", Toast.LENGTH_SHORT).show()
+                6 -> Toast.makeText(applicationContext, "Privacy Policy Clicked", Toast.LENGTH_SHORT).show()
             }
             drawerLayout.closeDrawers()
         }
 
-        // Set up logout button click
+        // Logout button
         logoutButton.setOnClickListener {
             logout()
         }
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, historyFragment, "history").hide(historyFragment)
+            .add(R.id.fragment_container, profileFragment, "profile").hide(profileFragment)
+            .add(R.id.fragment_container, homeFragment, "home")
+            .commit()
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> {
-                    true
-                }
-                R.id.nav_search -> {
-
-                    true
-                }
-                R.id.nav_add -> {
-                    // load Add New Offence screen
-                    true
-                }
-                R.id.nav_history -> {
-                    startActivity(Intent(this,MyCasesActivity::class.java))
-                    true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, MyProfileActivity::class.java))
-                    true
-                }
+                R.id.nav_home -> switchFragment(homeFragment)
+                R.id.nav_profile -> switchFragment(profileFragment)
+                R.id.nav_history -> switchFragment(historyFragment)
                 else -> false
             }
         }
+    }
 
-        cameraCardView.setOnClickListener {
-            val intent = Intent(this, CameraActivity::class.java)
-            startActivity(intent)
+    fun switchToHomeFragment() {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        bottomNavigationView.selectedItemId = R.id.nav_home
+        if (activeFragment != homeFragment) {
+            supportFragmentManager.beginTransaction()
+                .hide(activeFragment)
+                .show(homeFragment)
+                .commit()
+            activeFragment = homeFragment
         }
+    }
 
-        galleryCardView.setOnClickListener {
-            val intent = Intent(this, GalleryActivity::class.java)
-            startActivity(intent)
-        }
+    fun isHomeFragmentActive(): Boolean {
+        return activeFragment == homeFragment
+    }
 
-        myComplaintsCardView.setOnClickListener {
-            val intent = Intent(this, MyComplaintsActivity::class.java)
-            startActivity(intent)
+    fun switchFragment(target: Fragment): Boolean {
+        if (activeFragment == target) return false
+        supportFragmentManager.beginTransaction()
+            .hide(activeFragment)
+            .show(target)
+            .commit()
+        activeFragment = target
+        return true
+    }
+    override fun onBackPressed() {
+        if (activeFragment != homeFragment) {
+            // Switch to home fragment instead of exiting
+            val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+            bottomNavigationView.selectedItemId = R.id.nav_home
+            switchFragment(homeFragment)
+        } else {
+            // If on home fragment, behave normally (exit app or navigate back)
+            super.onBackPressed()
         }
-        myViolationsCardView.setOnClickListener {
-            val intent = Intent(this, MyCasesActivity::class.java)
-            startActivity(intent)
-        }
+    }
 
+    fun viewProfile(view: View) {
+        val fragment = ProfileFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment) // Ensure you have this container in your activity_home.xml
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun logout() {
@@ -154,18 +153,13 @@ class HomeActivity : AppCompatActivity() {
         startActivity(Intent(this, Register::class.java))
         finish()
     }
-
-    fun viewProfile(view: View) {
-        startActivity(Intent(this, MyProfileActivity::class.java))
-        drawerLayout.closeDrawers()
-    }
     override fun onResume() {
         super.onResume()
         updateUserNameInDrawer()
     }
+
     private fun updateUserNameInDrawer() {
-        val headerView = findViewById<View>(R.id.drawer_content)
-        val userNameTextView = headerView.findViewById<TextView>(R.id.user_name_text)
+        val userNameTextView = findViewById<TextView>(R.id.user_name_text)
 
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
@@ -183,4 +177,6 @@ class HomeActivity : AppCompatActivity() {
             userNameTextView.text = "Guest"
         }
     }
+
+
 }
