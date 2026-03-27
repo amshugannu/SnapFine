@@ -343,6 +343,11 @@
                 android:layout_gravity="center_horizontal"
                 android:visibility="gone"/>
 
+            
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"/>
         </LinearLayout>
     </ScrollView>
 
