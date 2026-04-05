@@ -84,6 +84,9 @@
         <activity
             android:name=".UserVerificationActivity"
             android:exported="false" />
+        <activity
+            android:name=".CreateStaffAccountActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
