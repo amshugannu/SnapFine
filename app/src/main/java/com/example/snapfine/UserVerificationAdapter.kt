@@ -28,6 +28,19 @@ class UserVerificationAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val userDoc = users[position]
+        val roleStr = userDoc.getString("role")
+
+        if (roleStr != null && !roleStr.equals("citizen", ignoreCase = true)) {
+            holder.itemView.visibility = View.GONE
+            holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
+            return
+        } else {
+            holder.itemView.visibility = View.VISIBLE
+            holder.itemView.layoutParams = RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
         
         val name = userDoc.getString("Name") ?: "Unknown User"
         val email = userDoc.getString("email") ?: "No email"

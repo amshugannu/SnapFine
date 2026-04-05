@@ -51,11 +51,26 @@ class UserVerificationActivity : AppCompatActivity() {
                     tvEmptyState.visibility = View.GONE
                     recyclerView.visibility = View.VISIBLE
 
-                    val usersList = querySnapshot.documents.toMutableList()
-                    adapter = UserVerificationAdapter(usersList) { doc, isApproved ->
-                        updateUserStatus(doc, isApproved)
+                    val usersList = querySnapshot.documents.filter { doc ->
+                        val roleStr = doc.getString("role")
+                        if (roleStr == null || roleStr.equals("citizen", ignoreCase = true)) {
+                            true
+                        } else {
+                            false
+                        }
+                    }.toMutableList()
+
+                    if (usersList.isEmpty()) {
+                        tvEmptyState.visibility = View.VISIBLE
+                        recyclerView.visibility = View.GONE
+                    } else {
+                        tvEmptyState.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
+                        adapter = UserVerificationAdapter(usersList) { doc, isApproved ->
+                            updateUserStatus(doc, isApproved)
+                        }
+                        recyclerView.adapter = adapter
                     }
-                    recyclerView.adapter = adapter
                 }
             }
             .addOnFailureListener {
