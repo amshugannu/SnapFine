@@ -11,6 +11,14 @@
         android:layout_height="wrap_content"
         android:text="Admin Dashboard (Coming Soon)"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnCreateStaff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:text="Create Staff Account" />
 
 </LinearLayout>
