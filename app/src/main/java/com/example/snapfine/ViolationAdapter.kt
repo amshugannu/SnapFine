@@ -46,7 +46,19 @@ class ViolationAdapter(options: FirestoreRecyclerOptions<Violation>) :
         holder.timeTextView.text = "Time: ${model.time}"
         holder.descriptionTextView.text = "Description: ${model.description}"
         holder.fineAmountTextView.text = "Fine: ₹${model.fineAmount}"
-        holder.statusTextView.text = "Status: ${model.status}"
+        val statusStr = model.status ?: ""
+        holder.statusTextView.text = "Status: $statusStr"
+        val statusLower = statusStr.lowercase(java.util.Locale.ROOT)
+        when {
+            statusLower.contains("approved") || statusLower.contains("fine_issued") -> 
+                holder.statusTextView.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
+            statusLower.contains("reported") || statusLower.contains("pending") -> 
+                holder.statusTextView.setTextColor(android.graphics.Color.parseColor("#FF9800"))
+            statusLower.contains("rejected") -> 
+                holder.statusTextView.setTextColor(android.graphics.Color.parseColor("#F44336"))
+            else -> 
+                holder.statusTextView.setTextColor(android.graphics.Color.BLACK)
+        }
         // You can customize this adapter further as per your need
 
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())

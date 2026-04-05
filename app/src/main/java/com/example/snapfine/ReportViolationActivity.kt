@@ -253,7 +253,8 @@ class ReportViolationActivity : AppCompatActivity() {
         val violationData = hashMapOf(
             "vehicleNumber" to vehicleNumber,
             "reportedByUID" to reportedByUID,
-            "reportedToUID" to reportedToUID,
+            "reportedToUID" to "",
+            "potentialOffenderUID" to reportedToUID,
             "imageUrl" to "https://dummyimage.com/600x400/000/fff&text=No+Image",
             "date" to date,
             "time" to time,
@@ -261,7 +262,9 @@ class ReportViolationActivity : AppCompatActivity() {
             "violationType" to selectedViolationType,
             "description" to description,
             "timestamp" to System.currentTimeMillis(),
-            "status" to "Pending"
+            "status" to "reported",
+            "approvedBy" to "",
+            "rejectionReason" to ""
         )
 
         FirebaseFirestore.getInstance()
