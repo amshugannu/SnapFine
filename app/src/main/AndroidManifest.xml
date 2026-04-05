@@ -81,6 +81,9 @@
         <activity
             android:name=".AdminHomeActivity"
             android:exported="false" />
+        <activity
+            android:name=".UserVerificationActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
