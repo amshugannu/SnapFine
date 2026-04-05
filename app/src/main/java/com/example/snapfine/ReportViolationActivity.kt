@@ -4,22 +4,18 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.app.TimePickerDialog
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
+import androidx.core.widget.NestedScrollView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import java.text.SimpleDateFormat
-import androidx.core.text.HtmlCompat
-import androidx.core.widget.NestedScrollView
 import java.util.*
 
 class ReportViolationActivity : AppCompatActivity() {
@@ -41,7 +37,6 @@ class ReportViolationActivity : AppCompatActivity() {
 
     private var selectedViolationType: String = ""
     private var imageUri: Uri? = null
-    private val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,6 +102,13 @@ class ReportViolationActivity : AppCompatActivity() {
             scrollToView(descriptionInput)
         }
 
+        if (UserSession.isPending()) {
+            uploadButton.isEnabled = false
+            uploadButton.text = "Profile Under Review"
+        } else if (UserSession.isRejected()) {
+            uploadButton.isEnabled = false
+            uploadButton.text = "Profile Rejected"
+        }
     }
     private fun scrollToView(view: View) {
         scrollView.post {

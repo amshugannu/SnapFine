@@ -12,9 +12,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -41,8 +38,8 @@ class LoginActivity : AppCompatActivity() {
         fStore = FirebaseFirestore.getInstance()
 
         if (fAuth.currentUser != null) {
-            startActivity(Intent(applicationContext, HomeActivity::class.java))
-            finish()
+            val userId = fAuth.currentUser!!.uid
+            routeUserBasedOnRole(this, userId)
         }
 
         mRegisterBtn.setOnClickListener {
@@ -78,12 +75,17 @@ class LoginActivity : AppCompatActivity() {
                         user["Name"] = fullname
                         user["email"] = email
                         user["phone"] = phone
+                        user["role"] = "citizen"
+                        user["verificationStatus"] = "pending"
 
                         documentReference.set(user)
                             .addOnSuccessListener {
                                 Log.d(TAG, "onSuccess: user Profile is created for $userID")
                             }
-                        startActivity(Intent(applicationContext, HomeActivity::class.java))
+                        val intent = Intent(applicationContext, HomeActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
                     } else {
                         Toast.makeText(this, "Error! " + task.exception?.message, Toast.LENGTH_SHORT).show()
                         progressBar.visibility = View.GONE

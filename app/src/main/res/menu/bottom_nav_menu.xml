@@ -5,16 +5,17 @@
         android:icon="@drawable/homebutton"
         android:title="Home" />
     <item
-        android:id="@+id/nav_search"
-        android:icon="@drawable/searchbtn"
-        android:title="Search" />
+        android:id="@+id/nav_report"
+        android:icon="@drawable/camera_img"
+        android:title="Report" />
     <item
-        android:id="@+id/nav_add"
-        android:title="" />
+        android:id="@+id/nav_complaints"
+        android:icon="@drawable/mycases_img"
+        android:title="Complaints" />
     <item
-        android:id="@+id/nav_history"
+        android:id="@+id/nav_cases"
         android:icon="@drawable/historybtn"
-        android:title="History" />
+        android:title="My Cases" />
     <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/baseline_person_24"

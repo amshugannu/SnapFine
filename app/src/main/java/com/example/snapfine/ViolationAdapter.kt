@@ -15,6 +15,10 @@ import java.util.Locale
 class ViolationAdapter(options: FirestoreRecyclerOptions<Violation>) :
     FirestoreRecyclerAdapter<Violation, ViolationAdapter.ViolationViewHolder>(options) {
 
+    init {
+        stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+    }
+
     class ViolationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val timestampTextView: TextView = itemView.findViewById(R.id.timestampTextView)
         val violationTypeTextView: TextView = itemView.findViewById(R.id.violationTypeTextView)

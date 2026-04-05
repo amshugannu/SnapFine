@@ -3,20 +3,16 @@ package com.example.snapfine
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MyComplaintsActivity : AppCompatActivity() {
 
@@ -31,6 +27,9 @@ class MyComplaintsActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewMyComplaints)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+        (recyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
+        recyclerView.itemAnimator = null
         emptyView = findViewById(R.id.emptyView)
 
         backbtn = findViewById(R.id.btn_back)

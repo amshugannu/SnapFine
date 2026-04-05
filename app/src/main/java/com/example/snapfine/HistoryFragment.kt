@@ -5,19 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import android.widget.TextView
-import android.widget.Toast
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class HistoryFragment : Fragment() {
 
@@ -38,6 +34,9 @@ class HistoryFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recyclerViewMyCases)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.setHasFixedSize(true)
+        (recyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
+        recyclerView.itemAnimator = null
 
         // Assume you pass an argument called "showBackBtn" when navigating by card
         backbtn = view.findViewById(R.id.btn_back)
@@ -90,7 +89,14 @@ class HistoryFragment : Fragment() {
             adapter.stopListening()
         }
     }
+
+    override fun onDestroyView() {
+        if (::adapter.isInitialized) {
+            adapter.stopListening()
+        }
+        if (::recyclerView.isInitialized) {
+            recyclerView.adapter = null
+        }
+        super.onDestroyView()
+    }
 }
-
-
-

@@ -1,6 +1,7 @@
 package com.example.snapfine
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +31,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var submitButton: Button
     private lateinit var editButton: Button
+    private lateinit var logoutButton: Button
     private lateinit var okbtn: Button
 
     private lateinit var fullName: TextView
@@ -81,6 +83,7 @@ class ProfileFragment : Fragment() {
         submitButton = view.findViewById(R.id.submitButton)
         editButton = view.findViewById(R.id.editButton)
         editmaterial = view.findViewById(R.id.edit)
+        logoutButton = view.findViewById(R.id.logoutButton)
         okbtn = view.findViewById(R.id.okbtn)
 
         // Edit basic info button
@@ -110,6 +113,15 @@ class ProfileFragment : Fragment() {
         // Submit vehicle info button
         submitButton.setOnClickListener {
             handleSubmit()
+        }
+
+        logoutButton.setOnClickListener {
+            fAuth.signOut()
+            val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            startActivity(intent)
+            requireActivity().finish()
         }
 
         // Load user data from Firestore
