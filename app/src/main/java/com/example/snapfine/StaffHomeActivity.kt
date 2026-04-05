@@ -1,14 +1,11 @@
 package com.example.snapfine
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 
-class Mainhome : AppCompatActivity() {
+class StaffHomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_mainhome)
-
+        setContentView(R.layout.activity_staff_home)
     }
 }
