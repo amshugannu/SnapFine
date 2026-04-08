@@ -13,5 +13,11 @@ class StaffHomeActivity : AppCompatActivity() {
             val intent = android.content.Intent(this, UserVerificationActivity::class.java)
             startActivity(intent)
         }
+
+        val btnReviewViolations = findViewById<android.widget.Button>(R.id.btnReviewViolations)
+        btnReviewViolations.setOnClickListener {
+            val intent = android.content.Intent(this, ViolationReviewActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

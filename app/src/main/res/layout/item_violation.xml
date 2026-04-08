@@ -131,6 +131,16 @@
             android:textColor="@android:color/black"
             android:layout_marginBottom="8dp"/>
 
+        <!-- Evidence Image -->
+        <ImageView
+            android:id="@+id/violationEvidenceImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="12dp"
+            android:background="@android:color/darker_gray"
+            android:visibility="gone"/>
+
         <!-- Timestamp -->
         <TextView
             android:id="@+id/timestampTextView"
