@@ -6,6 +6,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.util.Log
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import com.google.firebase.firestore.DocumentSnapshot
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -22,6 +25,7 @@ class ViolationReviewAdapter(
         val tvTimestamp: TextView = view.findViewById(R.id.tvTimestamp)
         val btnApproveViolation: Button = view.findViewById(R.id.btnApproveViolation)
         val btnRejectViolation: Button = view.findViewById(R.id.btnRejectViolation)
+        val ivViolationEvidence: ImageView = view.findViewById(R.id.ivViolationEvidence)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,6 +36,7 @@ class ViolationReviewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val doc = violations[position]
+        Log.d("ViolationReviewAdapter", "Binding violation: ${doc.id}")
 
         val vehicleNum = doc.getString("vehicleNumber") ?: "Unknown Vehicle"
         val vType = doc.getString("violationType") ?: "Unknown Violation"
@@ -47,6 +52,22 @@ class ViolationReviewAdapter(
             holder.tvTimestamp.text = "Reported at: N/A"
         }
 
+        // Load evidence image
+        val evidenceUrl = doc.getString("evidenceUrl") ?: ""
+        val imageUrl = doc.getString("imageUrl") ?: ""
+        val finalImageUrl = if (evidenceUrl.isNotEmpty()) evidenceUrl else imageUrl
+        
+        if (finalImageUrl.isNotEmpty()) {
+            holder.ivViolationEvidence.visibility = View.VISIBLE
+            Glide.with(holder.itemView.context)
+                .load(finalImageUrl)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_menu_report_image)
+                .into(holder.ivViolationEvidence)
+        } else {
+            holder.ivViolationEvidence.visibility = View.GONE
+        }
+        
         holder.btnApproveViolation.setOnClickListener {
             onActionComplete(doc, true)
             removeSafely(doc)

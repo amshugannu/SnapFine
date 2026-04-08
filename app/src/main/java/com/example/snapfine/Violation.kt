@@ -15,5 +15,8 @@ data class Violation(
     val timestamp: Long = 0,
     val potentialOffenderUID: String = "",
     val approvedBy: String = "",
-    val rejectionReason: String = ""
+    val rejectionReason: String = "",
+    val reportedBy: String = "",
+    val evidenceUrl: String = "",
+    val violatorUid: String = ""
 )

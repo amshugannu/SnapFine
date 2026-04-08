@@ -5,18 +5,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.util.Log
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 
-class ViolationAdapter(options: FirestoreRecyclerOptions<Violation>) :
-    FirestoreRecyclerAdapter<Violation, ViolationAdapter.ViolationViewHolder>(options) {
+class ViolationAdapter(private var violations: MutableList<Violation> = mutableListOf()) :
+    RecyclerView.Adapter<ViolationAdapter.ViolationViewHolder>() {
 
-    init {
-        stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+    fun updateData(newList: List<Violation>) {
+        violations.clear()
+        violations.addAll(newList)
+        notifyDataSetChanged()
     }
 
     class ViolationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -29,16 +32,21 @@ class ViolationAdapter(options: FirestoreRecyclerOptions<Violation>) :
         val descriptionTextView: TextView = itemView.findViewById(R.id.descriptionTextView)
         val fineAmountTextView: TextView = itemView.findViewById(R.id.fineAmountTextView)
         val statusTextView: TextView = itemView.findViewById(R.id.statusTextView)
-        // Add any additional views if needed
+        val violationEvidenceImage: ImageView = itemView.findViewById(R.id.violationEvidenceImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViolationViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_violation, parent, false) // Use your existing item XML layout
+            .inflate(R.layout.item_violation, parent, false)
         return ViolationViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViolationViewHolder, position: Int, model: Violation) {
+    override fun getItemCount(): Int = violations.size
+
+    override fun onBindViewHolder(holder: ViolationViewHolder, position: Int) {
+        val model = violations[position]
+        Log.d("ViolationAdapter", "Binding violation at pos $position: ${model.vehicleNumber}, status: ${model.status}")
+        
         holder.violationTypeTextView.text = "Violation: ${model.violationType}"
         holder.vehicleNumberTextView.text = "Vehicle: ${model.vehicleNumber}"
         holder.locationTextView.text = "Location: ${model.location}"
@@ -46,9 +54,10 @@ class ViolationAdapter(options: FirestoreRecyclerOptions<Violation>) :
         holder.timeTextView.text = "Time: ${model.time}"
         holder.descriptionTextView.text = "Description: ${model.description}"
         holder.fineAmountTextView.text = "Fine: ₹${model.fineAmount}"
+        
         val statusStr = model.status ?: ""
         holder.statusTextView.text = "Status: $statusStr"
-        val statusLower = statusStr.lowercase(java.util.Locale.ROOT)
+        val statusLower = statusStr.lowercase(Locale.ROOT)
         when {
             statusLower.contains("approved") || statusLower.contains("fine_issued") -> 
                 holder.statusTextView.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
@@ -59,7 +68,19 @@ class ViolationAdapter(options: FirestoreRecyclerOptions<Violation>) :
             else -> 
                 holder.statusTextView.setTextColor(android.graphics.Color.BLACK)
         }
-        // You can customize this adapter further as per your need
+
+        // Load evidence image
+        val finalImageUrl = if (model.evidenceUrl.isNotEmpty()) model.evidenceUrl else model.imageUrl
+        if (finalImageUrl.isNotEmpty()) {
+            holder.violationEvidenceImage.visibility = View.VISIBLE
+            Glide.with(holder.itemView.context)
+                .load(finalImageUrl)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_menu_report_image)
+                .into(holder.violationEvidenceImage)
+        } else {
+            holder.violationEvidenceImage.visibility = View.GONE
+        }
 
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val violationType = model.violationType?.trim()
@@ -69,27 +90,29 @@ class ViolationAdapter(options: FirestoreRecyclerOptions<Violation>) :
             "N/A"
         holder.timestampTextView.text = "Reported at: $formattedTimestamp"
 
-        val finesCollection = FirebaseFirestore.getInstance().collection("fines")
-        finesCollection.document("fineid") // Replace with your actual document ID
-            .get()
-            .addOnSuccessListener { document ->
-                if (!violationType.isNullOrEmpty()) {
-                    try {
-                        val fineValue = document.get(violationType)
-                        val fineAmount = fineValue?.toString() ?: "Not available"
-                        holder.fineAmountTextView.text = "Fine: ₹$fineAmount"
-                    } catch (e: IllegalArgumentException) {
-                        android.util.Log.e("ViolationAdapter", "Invalid field path: $violationType", e)
-                        holder.fineAmountTextView.text = "Fine: Not available"
+        // Display assigned fine if available, otherwise fetch from catalog
+        if (!model.fineAmount.isNullOrEmpty() && model.fineAmount != "0") {
+            holder.fineAmountTextView.text = "Fine: ₹${model.fineAmount}"
+        } else {
+            val finesCollection = FirebaseFirestore.getInstance().collection("fines")
+            finesCollection.document("fineid") 
+                .get()
+                .addOnSuccessListener { document ->
+                    if (!violationType.isNullOrEmpty()) {
+                        try {
+                            val fineValue = document.get(violationType)
+                            val fineAmountValue = fineValue?.toString() ?: "Pending"
+                            holder.fineAmountTextView.text = "Fine: ₹$fineAmountValue"
+                        } catch (e: Exception) {
+                            holder.fineAmountTextView.text = "Fine: Pending"
+                        }
+                    } else {
+                        holder.fineAmountTextView.text = "Fine: Pending"
                     }
-                } else {
-                    android.util.Log.e("ViolationAdapter", "Empty or null violationType for model: $model")
-                    holder.fineAmountTextView.text = "Fine: Not available"
                 }
-            }
-            .addOnFailureListener { exception ->
-                holder.fineAmountTextView.text = "Error: ${exception.message}"
-            }
+                .addOnFailureListener {
+                    holder.fineAmountTextView.text = "Fine: Pending"
+                }
+        }
     }
-
 }

@@ -1,5 +1,6 @@
 package com.example.snapfine
 
+import android.util.Log
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
@@ -250,12 +251,13 @@ class ReportViolationActivity : AppCompatActivity() {
         uploadButton.text = "Submitting..."
         loadingDialog.show()
 
+        val currentAuthUid = FirebaseAuth.getInstance().currentUser?.uid ?: "NULL_AUTH"
         val violationData = hashMapOf(
             "vehicleNumber" to vehicleNumber,
-            "reportedByUID" to reportedByUID,
+            "reportedBy" to reportedByUID, // Updated key
             "reportedToUID" to "",
             "potentialOffenderUID" to reportedToUID,
-            "imageUrl" to "https://dummyimage.com/600x400/000/fff&text=No+Image",
+            "evidenceUrl" to "https://dummyimage.com/600x400/000/fff&text=No+Image", // Updated key
             "date" to date,
             "time" to time,
             "location" to location,
@@ -264,19 +266,28 @@ class ReportViolationActivity : AppCompatActivity() {
             "timestamp" to System.currentTimeMillis(),
             "status" to "reported",
             "approvedBy" to "",
-            "rejectionReason" to ""
+            "rejectionReason" to "",
+            "violatorUid" to reportedToUID // Target UID for offender query
         )
+
+        Log.d("SnapFine-DEBUG", "[DEBUG-SUBMIT] --- SUBMISSION START ---")
+        Log.d("SnapFine-DEBUG", "[DEBUG-SUBMIT] Current Auth UID: $currentAuthUid")
+        Log.d("SnapFine-DEBUG", "[DEBUG-SUBMIT] reportedBy field: ${violationData["reportedBy"]}")
+        Log.d("SnapFine-DEBUG", "[DEBUG-SUBMIT] violatorUid field: ${violationData["violatorUid"]}")
+        Log.d("SnapFine-DEBUG", "[DEBUG-SUBMIT] Full Data Object: $violationData")
 
         FirebaseFirestore.getInstance()
             .collection("violations")
             .add(violationData)
             .addOnSuccessListener {
+                Log.d("SnapFine-DEBUG", "[DEBUG-SUBMIT] SUCCESS: Violation ID: ${it.id}")
                 sendNotificationToVehicleOwner(reportedToUID, vehicleNumber)
                 loadingDialog.dismiss()
                 Toast.makeText(this, "Violation submitted successfully.", Toast.LENGTH_LONG).show()
                 finish()
             }
             .addOnFailureListener { e ->
+                Log.e("ReportViolation", "Failure: Could not create document", e)
                 loadingDialog.dismiss()
                 Toast.makeText(this, "Failed to submit: ${e.message}", Toast.LENGTH_SHORT).show()
                 resetUploadButton()

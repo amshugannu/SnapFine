@@ -1,6 +1,7 @@
 package com.example.snapfine
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -12,7 +13,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ListenerRegistration
 
 class MyComplaintsActivity : AppCompatActivity() {
 
@@ -20,6 +21,7 @@ class MyComplaintsActivity : AppCompatActivity() {
     private lateinit var adapter: ViolationAdapter
     private lateinit var emptyView: TextView
     private lateinit var backbtn: ImageButton
+    private var registration: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +37,9 @@ class MyComplaintsActivity : AppCompatActivity() {
         backbtn = findViewById(R.id.btn_back)
         backbtn.setOnClickListener { onBackPressed() }
 
+        adapter = ViolationAdapter()
+        recyclerView.adapter = adapter
+
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
         if (currentUserUid == null) {
             Toast.makeText(this, "Please login to view your complaints.", Toast.LENGTH_SHORT).show()
@@ -42,38 +47,55 @@ class MyComplaintsActivity : AppCompatActivity() {
             return
         }
 
-        // Query Firestore to get violations reported by the current user
-        val query: Query = FirebaseFirestore.getInstance()
-            .collection("violations")
-            .whereEqualTo("reportedByUID", currentUserUid)
-            .orderBy("timestamp", Query.Direction.DESCENDING) // Optional: Order by timestamp
+        // Dashboard Diagnosis: Temporarily remove orderBy to bypass index requirement
+        Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] --- REPORTER QUERY DIAGNOSIS ---")
+        Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Current User UID: $currentUserUid")
+        
+        val db = FirebaseFirestore.getInstance()
+        registration = db.collection("violations")
+            .whereEqualTo("reportedBy", currentUserUid)
+            // .orderBy("timestamp", Query.Direction.DESCENDING) // TEMPORARILY REMOVED FOR INDEX TESTING
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    Log.e("SnapFine-DEBUG", "[DEBUG-REPORTER] Listen failed. Error: ${e.message}", e)
+                    // SHOW ERROR ON UI so user can see 'Index Required' or other errors
+                    Toast.makeText(this, "Firebase Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    return@addSnapshotListener
+                }
 
-        val options = FirestoreRecyclerOptions.Builder<Violation>()
-            .setQuery(query, Violation::class.java)
-            .build()
+                if (snapshots != null) {
+                    Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Snapshot received. Document count: ${snapshots.size()}")
+                    
+                    val rawDocsInfo = snapshots.documents.map { doc ->
+                        "ID: ${doc.id}, reportedBy: ${doc.getString("reportedBy")}"
+                    }.joinToString("\n")
+                    Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Raw Documents:\n$rawDocsInfo")
 
-        adapter = ViolationAdapter(options)
-        recyclerView.adapter = adapter
-
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onChanged() {
-                super.onChanged()
-                if (adapter.itemCount == 0) {
-                    emptyView.visibility = View.VISIBLE // Show empty state
+                    val complaints = snapshots.toObjects(Violation::class.java)
+                    Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Step 5 & 9 Check: Fetched ${complaints.size} objects for reporter $currentUserUid")
+                    
+                    // Step 7: Force UI Refresh
+                    adapter.updateData(complaints)
+                    
+                    if (complaints.isEmpty()) {
+                        emptyView.visibility = View.VISIBLE
+                        recyclerView.visibility = View.GONE
+                    } else {
+                        emptyView.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
+                    }
                 } else {
-                    emptyView.visibility = View.GONE // Hide empty state
+                    Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Snapshot is NULL")
                 }
             }
-        })
     }
 
     override fun onStart() {
         super.onStart()
-        adapter.startListening()
     }
 
     override fun onStop() {
         super.onStop()
-        adapter.stopListening()
+        registration?.remove()
     }
 }
