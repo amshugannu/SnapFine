@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +22,8 @@ class HistoryFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ViolationAdapter
     private lateinit var backbtn: ImageButton
+    private lateinit var emptyStateView: View
+    private lateinit var loadingStateView: View
     private var registration: ListenerRegistration? = null
 
     override fun onCreateView(
@@ -37,6 +41,14 @@ class HistoryFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
         (recyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
         recyclerView.itemAnimator = null
+
+        loadingStateView = view.findViewById(R.id.loadingState)
+        emptyStateView = view.findViewById(R.id.emptyState)
+
+        // Configure Empty State
+        view.findViewById<TextView>(R.id.tvEmptyStateTitle)?.text = "No violations 🎉"
+        view.findViewById<TextView>(R.id.tvEmptyStateSubtitle)?.text = "You're driving responsibly!"
+        view.findViewById<ImageView>(R.id.ivEmptyStateIcon)?.setImageResource(R.drawable.baseline_edit_24)
 
         backbtn = view.findViewById(R.id.btn_back)
         backbtn?.setOnClickListener {
@@ -63,19 +75,21 @@ class HistoryFragment : Fragment() {
         adapter = ViolationAdapter()
         recyclerView.adapter = adapter
 
-        // Dashboard Diagnosis: Temporarily remove orderBy to bypass index requirement
-        android.util.Log.d("SnapFine-DEBUG", "[DEBUG-OFFENDER] --- OFFENDER QUERY DIAGNOSIS ---")
-        android.util.Log.d("SnapFine-DEBUG", "[DEBUG-OFFENDER] Current User UID: $currentUserUid")
+        // Show Initial Loading
+        loadingStateView.visibility = View.VISIBLE
+        emptyStateView.visibility = View.GONE
+        recyclerView.visibility = View.GONE
 
         val db = FirebaseFirestore.getInstance()
         registration = db.collection("violations")
             .whereEqualTo("violatorUid", currentUserUid)
             .whereEqualTo("status", "approved")
-            // .orderBy("timestamp", Query.Direction.DESCENDING) // TEMPORARILY REMOVED FOR INDEX TESTING
             .addSnapshotListener { snapshots, e ->
+                // Hide Loading once first response arrives
+                loadingStateView.visibility = View.GONE
+
                 if (e != null) {
-                    android.util.Log.e("SnapFine-DEBUG", "[DEBUG-OFFENDER] Listen failed. Error: ${e.message}", e)
-                    // SHOW ERROR ON UI so user can see 'Index Required' or other errors
+                    android.util.Log.e("SnapFine-DEBUG", "Listen failed. Error: ${e.message}", e)
                     if (isAdded) {
                         Toast.makeText(requireContext(), "Firebase Error: ${e.message}", Toast.LENGTH_LONG).show()
                     }
@@ -83,20 +97,16 @@ class HistoryFragment : Fragment() {
                 }
 
                 if (snapshots != null) {
-                    android.util.Log.d("SnapFine-DEBUG", "[DEBUG-OFFENDER] Snapshot received. Document count: ${snapshots.size()}")
-                    
-                    val rawDocsInfo = snapshots.documents.map { doc ->
-                        "ID: ${doc.id}, violatorUid: ${doc.getString("violatorUid")}, status: ${doc.getString("status")}"
-                    }.joinToString("\n")
-                    android.util.Log.d("SnapFine-DEBUG", "[DEBUG-OFFENDER] Raw Documents:\n$rawDocsInfo")
-
                     val violationsList = snapshots.toObjects(Violation::class.java)
-                    android.util.Log.d("SnapFine-DEBUG", "[DEBUG-OFFENDER] Step 6 & 9 Check: Fetched ${violationsList.size} objects for violator $currentUserUid")
-                    
-                    // Step 7: Force UI Refresh
                     adapter.updateData(violationsList)
-                } else {
-                    android.util.Log.d("SnapFine-DEBUG", "[DEBUG-OFFENDER] Snapshot is NULL")
+                    
+                    if (violationsList.isEmpty()) {
+                        emptyStateView.visibility = View.VISIBLE
+                        recyclerView.visibility = View.GONE
+                    } else {
+                        emptyStateView.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
+                    }
                 }
             }
     }

@@ -35,32 +35,47 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize CardViews
-        val cameraCardView = view.findViewById<CardView>(R.id.card_camera)
-        val galleryCardView = view.findViewById<CardView>(R.id.card_gallery)
-        val myComplaintsCardView = view.findViewById<CardView>(R.id.mycomplaints)
-        val myViolationsCardView = view.findViewById<CardView>(R.id.myviolations)
+        // Initialize Views
+        val btnReportNow = view.findViewById<View>(R.id.btn_report_now)
+        val profileIcon = view.findViewById<View>(R.id.ivProfile)
+        val complaintsCard = view.findViewById<View>(R.id.card_my_complaints)
+        val violationsCard = view.findViewById<View>(R.id.card_my_violations)
 
-        // CardView click listeners for navigation
-        cameraCardView.setOnClickListener {
+        // Setup Action Cards UI
+        complaintsCard.findViewById<android.widget.TextView>(R.id.tvActionTitle).text = "My Complaints"
+        complaintsCard.findViewById<android.widget.TextView>(R.id.tvActionSubtitle).text = "Track your reports"
+        complaintsCard.findViewById<android.widget.ImageView>(R.id.ivActionIcon).setImageResource(R.drawable.baseline_edit_24)
+
+        violationsCard.findViewById<android.widget.TextView>(R.id.tvActionTitle).text = "My Violations"
+        violationsCard.findViewById<android.widget.TextView>(R.id.tvActionSubtitle).text = "View issued fines"
+        violationsCard.findViewById<android.widget.ImageView>(R.id.ivActionIcon).setImageResource(R.drawable.violations_img)
+
+        // Setup Alerts Header
+        view.findViewById<android.widget.TextView>(R.id.tvSectionTitle).text = "Traffic Alerts 🚨"
+
+        // Click listeners
+        btnReportNow.applyScaleAnimation()
+        btnReportNow.setOnClickListener {
             handleReportClick()
         }
 
-        galleryCardView.setOnClickListener {
-            handleReportClick(isGallery = true)
+        profileIcon.setOnClickListener {
+            val intent = Intent(requireContext(), MyProfileActivity::class.java)
+            startActivity(intent)
         }
 
         if (UserSession.role != "citizen") {
-            cameraCardView.visibility = View.GONE
-            galleryCardView.visibility = View.GONE
+            btnReportNow.visibility = View.GONE
         }
 
-        myComplaintsCardView.setOnClickListener {
+        complaintsCard.applyScaleAnimation()
+        complaintsCard.setOnClickListener {
             val intent = Intent(requireContext(), MyComplaintsActivity::class.java)
             startActivity(intent)
         }
 
-        myViolationsCardView.setOnClickListener {
+        violationsCard.applyScaleAnimation()
+        violationsCard.setOnClickListener {
             val fragment = HistoryFragment()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)

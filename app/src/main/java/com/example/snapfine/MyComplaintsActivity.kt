@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,8 +19,9 @@ import com.google.firebase.firestore.ListenerRegistration
 class MyComplaintsActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ViolationAdapter
-    private lateinit var emptyView: TextView
+    private lateinit var adapter: ComplaintsAdapter
+    private lateinit var emptyStateView: View
+    private lateinit var loadingStateView: View
     private lateinit var backbtn: ImageButton
     private var registration: ListenerRegistration? = null
 
@@ -30,62 +32,59 @@ class MyComplaintsActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerViewMyComplaints)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
-        (recyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
-        recyclerView.itemAnimator = null
-        emptyView = findViewById(R.id.emptyView)
+        // Enable smooth item animations for expand/collapse
+        (recyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = true
+
+        emptyStateView = findViewById(R.id.emptyState)
+        loadingStateView = findViewById(R.id.loadingState)
+
+        // Configure Empty State
+        emptyStateView.findViewById<TextView>(R.id.tvEmptyStateTitle)?.text = "No complaints yet 🚫"
+        emptyStateView.findViewById<TextView>(R.id.tvEmptyStateSubtitle)?.text = "Start reporting violations"
+        emptyStateView.findViewById<ImageView>(R.id.ivEmptyStateIcon)?.setImageResource(R.drawable.baseline_edit_24)
 
         backbtn = findViewById(R.id.btn_back)
+        backbtn.applyScaleAnimation()
         backbtn.setOnClickListener { onBackPressed() }
 
-        adapter = ViolationAdapter()
+        adapter = ComplaintsAdapter()
         recyclerView.adapter = adapter
 
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
         if (currentUserUid == null) {
-            Toast.makeText(this, "Please login to view your complaints.", Toast.LENGTH_SHORT).show()
+            showErrorSnackbar("Please login to view your complaints.")
             finish()
             return
         }
 
-        // Dashboard Diagnosis: Temporarily remove orderBy to bypass index requirement
-        Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] --- REPORTER QUERY DIAGNOSIS ---")
-        Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Current User UID: $currentUserUid")
-        
+        // Show Initial Loading
+        loadingStateView.visibility = View.VISIBLE
+        emptyStateView.visibility = View.GONE
+        recyclerView.visibility = View.GONE
+
         val db = FirebaseFirestore.getInstance()
         registration = db.collection("violations")
             .whereEqualTo("reportedBy", currentUserUid)
-            // .orderBy("timestamp", Query.Direction.DESCENDING) // TEMPORARILY REMOVED FOR INDEX TESTING
             .addSnapshotListener { snapshots, e ->
+                // Hide Loading once first response arrives
+                loadingStateView.visibility = View.GONE
+
                 if (e != null) {
-                    Log.e("SnapFine-DEBUG", "[DEBUG-REPORTER] Listen failed. Error: ${e.message}", e)
-                    // SHOW ERROR ON UI so user can see 'Index Required' or other errors
-                    Toast.makeText(this, "Firebase Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    showErrorSnackbar("Failed to sync reports: ${e.message}")
                     return@addSnapshotListener
                 }
 
                 if (snapshots != null) {
-                    Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Snapshot received. Document count: ${snapshots.size()}")
-                    
-                    val rawDocsInfo = snapshots.documents.map { doc ->
-                        "ID: ${doc.id}, reportedBy: ${doc.getString("reportedBy")}"
-                    }.joinToString("\n")
-                    Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Raw Documents:\n$rawDocsInfo")
-
                     val complaints = snapshots.toObjects(Violation::class.java)
-                    Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Step 5 & 9 Check: Fetched ${complaints.size} objects for reporter $currentUserUid")
-                    
-                    // Step 7: Force UI Refresh
                     adapter.updateData(complaints)
                     
                     if (complaints.isEmpty()) {
-                        emptyView.visibility = View.VISIBLE
+                        emptyStateView.visibility = View.VISIBLE
                         recyclerView.visibility = View.GONE
                     } else {
-                        emptyView.visibility = View.GONE
+                        emptyStateView.visibility = View.GONE
                         recyclerView.visibility = View.VISIBLE
                     }
-                } else {
-                    Log.d("SnapFine-DEBUG", "[DEBUG-REPORTER] Snapshot is NULL")
                 }
             }
     }

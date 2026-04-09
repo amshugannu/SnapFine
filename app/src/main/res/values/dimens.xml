@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing -->
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">12dp</dimen>
+    <dimen name="padding_large">16dp</dimen>
+    <dimen name="margin_standard">12dp</dimen>
+
+    <!-- Corner Radii -->
+    <dimen name="card_radius">16dp</dimen>
+    <dimen name="button_radius">12dp</dimen>
+    <dimen name="chip_radius">24dp</dimen>
+
+    <!-- Miscellaneous -->
+    <dimen name="elevation_card">4dp</dimen>
+</resources>

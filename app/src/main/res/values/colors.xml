@@ -23,7 +23,16 @@
     <color name="brightGlassBlue">#F3F8FE</color>
     <color name="inputBg">#EAF2FB</color>
     <color name="inputBorder">#C9D6EB</color>
-
+    <!-- Global Design System Palette -->
+    <color name="colorPrimary">#6C2BD9</color>
+    <color name="colorPrimaryDark">#4A1FB8</color>
+    <color name="colorBackground">#F5F7FB</color>
+    <color name="colorCard">#FFFFFF</color>
+    <color name="textPrimary">#1A1A1A</color>
+    <color name="textSecondary">#777777</color>
+    <color name="statusSuccess">#4CAF50</color>
+    <color name="statusError">#F44336</color>
+    <color name="statusWarning">#FFC107</color>
 
 </resources>
 

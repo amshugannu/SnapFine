@@ -1,86 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:paddingTop="25dp"
-    android:background="@color/brightGlassBlue"
-    >
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context=".MyComplaintsActivity">
+
+    <!-- Header Section -->
+    <RelativeLayout
+        android:id="@+id/header_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        tools:context=".MyComplaintsActivity">
+        android:layout_height="64dp"
+        android:background="@color/white"
+        android:elevation="4dp"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:background="#FFF5F5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:orientation="horizontal"
-            android:id="@+id/header_layout">
-
-            <ImageButton
-                android:id="@+id/btn_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
-                android:src="@drawable/baseline_arrow_back_24"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
-
-
-            <TextView
-                android:layout_marginTop="15dp"
-                android:id="@+id/headingTextView"
-                android:layout_width="match_parent"
-                android:padding="16dp"
-                android:layout_height="wrap_content"
-                android:text="My Complaints"
-                android:textSize="24sp"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
-                tools:ignore="MissingConstraints" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewMyComplaints"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:layout_constraintTop_toBottomOf="@+id/header_layout"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:src="@drawable/baseline_arrow_back_24"
+            app:tint="@color/textPrimary" />
 
         <TextView
-
-            android:id="@+id/emptyView"
-            android:layout_width="match_parent"
+            android:id="@+id/headingTextView"
+            style="@style/SnapFine.Text.Subtitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You haven't reported any violations yet."
-            android:visibility="gone"
-            android:gravity="center"
-            android:textSize="16sp"
-            android:hint="hello"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="16dp"
-            tools:ignore="MissingConstraints" />
+            android:layout_centerInParent="true"
+            android:text="My Complaints"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
+    <!-- Main Content -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewMyComplaints"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header_layout" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+    <!-- Loading State -->
+    <include
+        android:id="@+id/loadingState"
+        layout="@layout/layout_loading_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header_layout" />
+
+    <!-- Empty State -->
+    <include
+        android:id="@+id/emptyState"
+        layout="@layout/layout_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header_layout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
