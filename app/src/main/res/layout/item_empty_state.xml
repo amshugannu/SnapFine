@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="No records yet"
+        android:text="@string/empty_default_title"
         android:textStyle="bold" />
 
     <TextView
@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="Start reporting violations to see them here."
+        android:text="@string/empty_default_subtitle"
         android:textColor="@color/textSecondary" />
 
 </LinearLayout>

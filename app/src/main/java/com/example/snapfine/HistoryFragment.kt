@@ -46,8 +46,8 @@ class HistoryFragment : Fragment() {
         emptyStateView = view.findViewById(R.id.emptyState)
 
         // Configure Empty State
-        view.findViewById<TextView>(R.id.tvEmptyStateTitle)?.text = "No violations 🎉"
-        view.findViewById<TextView>(R.id.tvEmptyStateSubtitle)?.text = "You're driving responsibly!"
+        view.findViewById<TextView>(R.id.tvEmptyStateTitle)?.text = getString(R.string.empty_violations_title)
+        view.findViewById<TextView>(R.id.tvEmptyStateSubtitle)?.text = getString(R.string.empty_violations_subtitle)
         view.findViewById<ImageView>(R.id.ivEmptyStateIcon)?.setImageResource(R.drawable.baseline_edit_24)
 
         backbtn = view.findViewById(R.id.btn_back)

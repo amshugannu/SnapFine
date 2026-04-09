@@ -2,4 +2,13 @@
     <string name="app_name">SnapFine</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Empty States -->
+    <string name="empty_complaints_title">No complaints yet 🚫</string>
+    <string name="empty_complaints_subtitle">Start reporting violations</string>
+    <string name="empty_violations_title">No violations 🎉</string>
+    <string name="empty_violations_subtitle">You\'re driving responsibly!</string>
+    <string name="empty_default_title">No records yet</string>
+    <string name="empty_default_subtitle">Check back later for updates.</string>
+
 </resources>

@@ -39,8 +39,8 @@ class MyComplaintsActivity : AppCompatActivity() {
         loadingStateView = findViewById(R.id.loadingState)
 
         // Configure Empty State
-        emptyStateView.findViewById<TextView>(R.id.tvEmptyStateTitle)?.text = "No complaints yet 🚫"
-        emptyStateView.findViewById<TextView>(R.id.tvEmptyStateSubtitle)?.text = "Start reporting violations"
+        emptyStateView.findViewById<TextView>(R.id.tvEmptyStateTitle)?.text = getString(R.string.empty_complaints_title)
+        emptyStateView.findViewById<TextView>(R.id.tvEmptyStateSubtitle)?.text = getString(R.string.empty_complaints_subtitle)
         emptyStateView.findViewById<ImageView>(R.id.ivEmptyStateIcon)?.setImageResource(R.drawable.baseline_edit_24)
 
         backbtn = findViewById(R.id.btn_back)
