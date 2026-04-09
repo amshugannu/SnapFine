@@ -30,6 +30,18 @@
 
     <style name="SnapFine.Button.Primary" parent="Widget.SnapFine.Button.Primary" />
 
+    <style name="Widget.SnapFine.Button.Secondary" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/button_secondary</item>
+        <item name="backgroundTint">@color/lightGray</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="cornerRadius">@dimen/button_radius</item>
+        <item name="android:paddingVertical">12dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <style name="SnapFine.Button.Secondary" parent="Widget.SnapFine.Button.Secondary" />
+
     <!-- SnapFine Design System Base -->
     <style name="SnapFine" />
 

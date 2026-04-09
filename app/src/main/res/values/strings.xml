@@ -11,4 +11,8 @@
     <string name="empty_default_title">No records yet</string>
     <string name="empty_default_subtitle">Check back later for updates.</string>
 
+    <!-- Preview Labels -->
+    <string name="btn_retake">Retake</string>
+    <string name="btn_use_photo">Use Photo</string>
+
 </resources>
