@@ -1,296 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/scrollView"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/brightGlassBlue">
+    android:background="@color/colorBackground"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="30dp"
-        android:paddingBottom="24dp"
-        android:gravity="center_horizontal">
+        android:padding="16dp">
 
-        <!-- Page Title -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-            <TextView
-                android:id="@+id/reportTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Report a "
-                android:textSize="36sp"
-                android:textStyle="bold"
-                android:layout_gravity="start"
-                android:textColor="@color/primaryBlue"
-                />
-
-        </LinearLayout>
-
+        <!-- Evidence Preview Section -->
         <TextView
-            android:id="@+id/reportTitle2"
+            style="@style/SnapFine.Text.Subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Traffic Violation"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:textColor="@color/primaryBlue"
-            android:layout_gravity="start"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="8dp"
+            android:text="Evidence"
+            android:textStyle="bold" />
 
-
-        <!-- Violation Image Card -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/violationImageView"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="5dp"
-            app:cardBackgroundColor="@color/glassFieldBackground">
+            android:layout_height="120dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/colorCard"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/RoundedCorners"
+            tools:src="@drawable/violations_img" />
 
-            <ImageView
-                android:id="@+id/violationImageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:contentDescription="Violation Image"
-                android:background="@android:color/darker_gray" />
-        </androidx.cardview.widget.CardView>
-
-        <!-- Vehicle Number and Search -->
-        <LinearLayout
+        <!-- Form Card -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/SnapFine.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:layout_margin="0dp"
+            app:cardUseCompatPadding="false">
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:background="@drawable/glass_input_3d"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Vehicle Number"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:boxStrokeColor="@color/primaryBlue">
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:background="@android:color/transparent"
-                    android:textColor="#142A4A"
-                    android:textColorHint="#979899"
-                    android:id="@+id/vehicleNumberInput"
+                <!-- Violation Type -->
+                <TextView
+                    style="@style/SnapFine.Text.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_violation_type"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/violationTypeSpinner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="56dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/spinner_background"
+                    android:spinnerMode="dropdown" />
 
-            <ImageButton
-                android:id="@+id/searchButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="12dp"
-                android:background="@drawable/search_btn_bg"
-                android:src="@drawable/ic_search_white_24dp"
-                app:tint="@android:color/white"
-                android:contentDescription="Search"/>
-        </LinearLayout>
+                <!-- Vehicle Number -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilVehicleNumber"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="@string/hint_vehicle_number"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:errorEnabled="true">
 
-        <!-- Read-only Fields -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:background="@drawable/glass_input_3d"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Phone Number"
-            android:layout_marginBottom="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/vehicleNumberInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapCharacters" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:background="@android:color/transparent"
-                android:textColor="#142A4A"
-                android:textColorHint="#979899"
-                android:id="@+id/phoneNumberInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <!-- Location -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="@string/hint_location"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:background="@drawable/glass_input_3d"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="User ID"
-            android:layout_marginBottom="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/locationInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPostalAddress" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:background="@android:color/transparent"
-                android:textColor="#142A4A"
-                android:textColorHint="#979899"
-                android:id="@+id/uidInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <!-- Metadata Row -->
+                <TextView
+                    style="@style/SnapFine.Text.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/label_date_time"
+                    android:textStyle="bold" />
 
-        <!-- Date & Time -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:background="@drawable/glass_input_3d"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Date"
-            android:layout_marginBottom="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:background="@android:color/transparent"
-                android:textColor="#142A4A"
-                android:textColorHint="#979899"
-                android:id="@+id/dateInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/dateInput"
+                        style="@style/SnapFine.Text.Body"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/glass_input_3d"
+                        android:enabled="false"
+                        android:padding="12dp"
+                        tools:text="10/04/2024" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:background="@drawable/glass_input_3d"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Time"
-            android:layout_marginBottom="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/timeInput"
+                        style="@style/SnapFine.Text.Body"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/glass_input_3d"
+                        android:enabled="false"
+                        android:padding="12dp"
+                        tools:text="10:30 AM" />
+                </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:background="@android:color/transparent"
-                android:textColor="#142A4A"
-                android:textColorHint="#979899"
-                android:id="@+id/timeInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <!-- Description -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="@string/hint_description"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp">
 
-        <!-- Location -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:background="@drawable/glass_input_3d"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Violation Location"
-            android:layout_marginBottom="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/violationDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        android:minLines="3" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:background="@android:color/transparent"
-                android:textColor="#142A4A"
-                android:textColorHint="#979899"
-                android:id="@+id/locationInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Violation Type -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="12dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Violation Type"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="6dp" />
-
-            <Spinner
-                android:id="@+id/violationTypeSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:spinnerMode="dropdown"
-                android:background="@drawable/spinner_background"
-                android:dropDownVerticalOffset="4dp" />
-        </LinearLayout>
-
-        <!-- Description -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:background="@drawable/glass_input_3d"
-            android:id="@+id/descriptionInputLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Describe the violation"
-            android:layout_marginBottom="20dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:background="@android:color/transparent"
-                android:textColor="#142A4A"
-                android:textColorHint="#979899"
-                android:id="@+id/violationDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top|start"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <!-- Hidden Fields (Retained for logic but not styled) -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/phoneNumberInput" />
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/uidInput" />
+        </View>
 
         <!-- Submit Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/uploadButton"
+            style="@style/SnapFine.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit Report"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@color/primaryBlue"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
-            android:padding="12dp" />
+            android:text="@string/btn_submit_report" />
 
     </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>

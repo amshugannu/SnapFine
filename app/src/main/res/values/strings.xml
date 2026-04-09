@@ -15,4 +15,15 @@
     <string name="btn_retake">Retake</string>
     <string name="btn_use_photo">Use Photo</string>
 
+    <!-- Report Form Strings -->
+    <string name="title_report_violation">Report Violation</string>
+    <string name="label_violation_type">Violation Type</string>
+    <string name="hint_vehicle_number">Vehicle Number (e.g., KA01AB1234)</string>
+    <string name="hint_location">Violation Location</string>
+    <string name="label_date_time">Date &amp; Time of Violation</string>
+    <string name="hint_description">Describe the incident (optional)</string>
+    <string name="btn_submit_report">Submit Report</string>
+    <string name="error_required">Required field</string>
+    <string name="error_invalid_vehicle">Invalid vehicle number format</string>
+
 </resources>

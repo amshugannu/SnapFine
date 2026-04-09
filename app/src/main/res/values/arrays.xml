@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="violation_types">
+        <item>Select Violation Type</item>
+        <item>Signal Jumping</item>
+        <item>No Helmet</item>
+        <item>Wrong Parking</item>
+        <item>Overspeeding</item>
+        <item>Driving Without License</item>
+        <item>Triple Riding</item>
+        <item>Hit and Run</item>
+        <item>Distracted Driving</item>
+        <item>Rash Driving</item>
+    </string-array>
+</resources>
