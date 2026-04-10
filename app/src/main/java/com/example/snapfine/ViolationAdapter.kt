@@ -26,7 +26,6 @@ class ViolationAdapter(private var violations: MutableList<Violation> = mutableL
         val tvVehicleNumber: TextView = itemView.findViewById(R.id.tvVehicleNumber)
         val tvDate: TextView = itemView.findViewById(R.id.tvDate)
         val tvFineAmount: TextView = itemView.findViewById(R.id.tvFineAmount)
-        val btnPayNow: MaterialButton = itemView.findViewById(R.id.btnPayNow)
         val ivThumbnail: ImageView = itemView.findViewById(R.id.ivThumbnail)
     }
 
@@ -41,43 +40,45 @@ class ViolationAdapter(private var violations: MutableList<Violation> = mutableL
     override fun onBindViewHolder(holder: ViolationViewHolder, position: Int) {
         val violation = violations[position]
         
-        holder.tvViolationType.text = violation.violationType
+        // Dynamic fallback for type display
+        holder.tvViolationType.text = if (violation.type.isNotEmpty()) violation.type else "Traffic Violation"
         holder.tvVehicleNumber.text = "Vehicle: ${violation.vehicleNumber}"
         holder.tvDate.text = violation.date
         
         val fineAmount = violation.fineAmount
         holder.tvFineAmount.text = if (fineAmount.isNullOrEmpty() || fineAmount == "0") "₹ Pending" else "₹$fineAmount"
         
-        // Status Handling
+        // Status Handling (Strict 3-Status System)
         val status = violation.status.lowercase(Locale.ROOT)
-        val isPaid = status.contains("paid")
         
-        if (isPaid) {
-            holder.tvStatusChip.text = "PAID"
-            holder.tvStatusChip.setBackgroundResource(R.drawable.chip_paid)
-            
-            holder.btnPayNow.text = "Paid"
-            holder.btnPayNow.isEnabled = false
-            holder.btnPayNow.setBackgroundColor(android.graphics.Color.LTGRAY)
-            holder.btnPayNow.setTextColor(android.graphics.Color.WHITE)
-        } else {
-            holder.tvStatusChip.text = "UNPAID"
-            holder.tvStatusChip.setBackgroundResource(R.drawable.chip_unpaid)
-            
-            holder.btnPayNow.text = "Pay Now"
-            holder.btnPayNow.isEnabled = true
-            // Reset to default style colors (managed by theme/material button)
-            holder.btnPayNow.setBackgroundColor(holder.itemView.context.getColor(R.color.colorPrimary))
-            holder.btnPayNow.setTextColor(android.graphics.Color.WHITE)
+        when (status) {
+            "pending" -> {
+                holder.tvStatusChip.text = "PENDING"
+                holder.tvStatusChip.setBackgroundResource(R.drawable.chip_warning)
+            }
+            "approved" -> {
+                holder.tvStatusChip.text = "APPROVED"
+                holder.tvStatusChip.setBackgroundResource(R.drawable.chip_success)
+            }
+            "rejected" -> {
+                holder.tvStatusChip.text = "REJECTED"
+                holder.tvStatusChip.setBackgroundResource(R.drawable.chip_error)
+            }
+            else -> {
+                holder.tvStatusChip.text = "UNKNOWN"
+                holder.tvStatusChip.setBackgroundResource(R.drawable.chip_warning)
+            }
         }
 
-        // Image Handling
-        val imageUrl = if (violation.evidenceUrl.isNotEmpty()) violation.evidenceUrl else violation.imageUrl
+        // Image Handling (Standardized Cloudinary URL Display)
+        val imageUrl = violation.imageUrl
         if (imageUrl.isNotEmpty()) {
             holder.ivThumbnail.visibility = View.VISIBLE
             Glide.with(holder.itemView.context)
                 .load(imageUrl)
                 .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_menu_report_image)
+                .centerCrop()
                 .into(holder.ivThumbnail)
         } else {
             holder.ivThumbnail.visibility = View.GONE

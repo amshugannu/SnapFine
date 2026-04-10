@@ -81,11 +81,8 @@ class LoginActivity : AppCompatActivity() {
                         documentReference.set(user)
                             .addOnSuccessListener {
                                 Log.d(TAG, "onSuccess: user Profile is created for $userID")
+                                routeUserBasedOnRole(this@LoginActivity, userID)
                             }
-                        val intent = Intent(applicationContext, HomeActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        finish()
                     } else {
                         Toast.makeText(this, "Error! " + task.exception?.message, Toast.LENGTH_SHORT).show()
                         progressBar.visibility = View.GONE

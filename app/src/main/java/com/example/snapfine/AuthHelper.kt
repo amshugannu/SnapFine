@@ -4,17 +4,35 @@ import android.app.Activity
 import android.content.Intent
 import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 
-fun routeUserBasedOnRole(activity: Activity, userId: String) {
+fun routeUserBasedOnRole(activity: Activity, userId: String, expectedRole: String? = null) {
     val fStore = FirebaseFirestore.getInstance()
+    
+    // Update FCM token on successful routing
+    FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+        if (token != null) {
+            fStore.collection("users").document(userId).update("fcmToken", token)
+        }
+    }
+
     fStore.collection("users").document(userId).get()
         .addOnSuccessListener { doc ->
-            val role = doc.getString("role") ?: "citizen"
+            val actualRole = doc.getString("role") ?: "citizen"
+            
+            // Security validation
+            if (expectedRole != null && expectedRole != actualRole) {
+                Toast.makeText(activity, "Incorrect role selected for this account", Toast.LENGTH_LONG).show()
+                com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+                return@addOnSuccessListener
+            }
+
             val verificationStatus = doc.getString("verificationStatus") ?: "approved"
-            UserSession.updateSession(role, verificationStatus)
-            val intent = when (role) {
-                "staff" -> Intent(activity, StaffHomeActivity::class.java)
-                "admin" -> Intent(activity, AdminHomeActivity::class.java)
+            UserSession.updateSession(actualRole, verificationStatus)
+            Toast.makeText(activity, "Logged in Successfully", Toast.LENGTH_SHORT).show()
+            val intent = when (actualRole) {
+                "staff" -> Intent(activity, StaffDashboardActivity::class.java)
+                "admin" -> Intent(activity, AdminDashboardActivity::class.java)
                 else -> Intent(activity, HomeActivity::class.java)
             }
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

@@ -55,6 +55,14 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
 
+    // CameraX
+    val cameraVersion = "1.3.1"
+    implementation("androidx.camera:camera-core:$cameraVersion")
+    implementation("androidx.camera:camera-camera2:$cameraVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+    implementation("androidx.camera:camera-view:$cameraVersion")
+    implementation("androidx.camera:camera-extensions:$cameraVersion")
+
     // Google Sign-In and Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
@@ -75,6 +83,7 @@ dependencies {
 
     implementation ("androidx.compose.foundation:foundation:1.8.3")
     implementation ("androidx.compose.material:material:1.8.3")
+    implementation(libs.okhttp)
 
 
 }

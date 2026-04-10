@@ -56,13 +56,7 @@ class HistoryFragment : Fragment() {
             if (isInBackStack) {
                 parentFragmentManager.popBackStack()
             } else {
-                (activity as? HomeActivity)?.let { homeActivity ->
-                    if (!homeActivity.isHomeFragmentActive()) {
-                        homeActivity.switchToHomeFragment()
-                    } else {
-                        activity?.onBackPressed()
-                    }
-                }
+                activity?.onBackPressed()
             }
         }
 

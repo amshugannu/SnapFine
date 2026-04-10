@@ -50,7 +50,7 @@
         <item name="cardBackgroundColor">@color/colorCard</item>
         <item name="cardCornerRadius">@dimen/card_radius</item>
         <item name="cardElevation">@dimen/elevation_card</item>
-        <item name="android:layout_margin">@dimen/margin_standard</item>
+        <item name="android:layout_marginBottom">@dimen/margin_standard</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
@@ -79,6 +79,11 @@
 
     <style name="SnapFine.Text.Caption">
         <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/textSecondary</item>
+    </style>
+
+    <style name="SnapFine.Text.Small">
+        <item name="android:textSize">10sp</item>
         <item name="android:textColor">@color/textSecondary</item>
     </style>
 

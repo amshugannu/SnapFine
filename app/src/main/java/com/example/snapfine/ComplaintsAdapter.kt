@@ -51,44 +51,50 @@ class ComplaintsAdapter(private var complaints: MutableList<Violation> = mutable
         val complaint = complaints[position]
         val isExpanded = position == expandedPosition
 
-        holder.tvViolationType.text = complaint.violationType
+        val type = if (complaint.type.isNotEmpty()) complaint.type else "Traffic Violation"
+        holder.tvViolationType.text = type
         holder.tvVehicleNumber.text = "Vehicle: ${complaint.vehicleNumber}"
         holder.tvDateTime.text = "${complaint.date} • ${complaint.time}"
         
         // Status Handling
+        // Status Handling (Strict 3-Status System)
         val status = complaint.status.lowercase(Locale.ROOT)
-        when {
-            status.contains("approved") || status.contains("fine_issued") -> {
+        when (status) {
+            "approved" -> {
                 holder.tvStatusChip.text = "APPROVED"
                 holder.tvStatusChip.setBackgroundResource(R.drawable.chip_success)
             }
-            status.contains("rejected") -> {
+            "rejected" -> {
                 holder.tvStatusChip.text = "REJECTED"
                 holder.tvStatusChip.setBackgroundResource(R.drawable.chip_error)
             }
-            else -> {
+            else -> { // Default to PENDING
                 holder.tvStatusChip.text = "PENDING"
                 holder.tvStatusChip.setBackgroundResource(R.drawable.chip_warning)
             }
         }
 
-        // Image Handling
-        val imageUrl = if (complaint.evidenceUrl.isNotEmpty()) complaint.evidenceUrl else complaint.imageUrl
+        // Image Handling (Standardized Cloudinary display with Legacy fallback)
+        val imageUrl = if (complaint.imageUrl.isNotEmpty()) complaint.imageUrl else "" 
+        // Note: For existing objects, mapping happens in the Activity/Fragment for Violation objects
+        
         if (imageUrl.isNotEmpty()) {
             holder.ivThumbnail.visibility = if (isExpanded) View.GONE else View.VISIBLE
             Glide.with(holder.itemView.context)
                 .load(imageUrl)
                 .placeholder(android.R.drawable.ic_menu_gallery)
+                .centerCrop()
                 .into(holder.ivThumbnail)
             
             if (isExpanded) {
                 holder.ivFullPreview.visibility = View.VISIBLE
                 Glide.with(holder.itemView.context)
                     .load(imageUrl)
+                    .placeholder(android.R.drawable.ic_menu_gallery)
                     .into(holder.ivFullPreview)
             }
         } else {
-            holder.ivThumbnail.setImageResource(R.drawable.baseline_edit_24) // Placeholder
+            holder.ivThumbnail.setImageResource(android.R.drawable.ic_menu_report_image)
             holder.ivThumbnail.visibility = if (isExpanded) View.GONE else View.VISIBLE
             holder.ivFullPreview.visibility = View.GONE
         }
@@ -109,7 +115,7 @@ class ComplaintsAdapter(private var complaints: MutableList<Violation> = mutable
             
             if (prevExpanded != -1) notifyItemChanged(prevExpanded)
             if (expandedPosition != -1) notifyItemChanged(expandedPosition)
-            if (isExpanded) notifyItemChanged(position) // Ensure current item updates if collapsing
+            if (isExpanded) notifyItemChanged(position)
         }
     }
 }

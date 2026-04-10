@@ -29,21 +29,16 @@ class MyComplaintsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_complaints)
 
-        recyclerView = findViewById(R.id.recyclerViewMyComplaints)
+        recyclerView = findViewById(R.id.rvMyComplaints)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
         // Enable smooth item animations for expand/collapse
         (recyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = true
 
-        emptyStateView = findViewById(R.id.emptyState)
-        loadingStateView = findViewById(R.id.loadingState)
+        emptyStateView = findViewById(R.id.layoutEmpty)
+        val progressBar = findViewById<View>(R.id.progressBar)
 
-        // Configure Empty State
-        emptyStateView.findViewById<TextView>(R.id.tvEmptyStateTitle)?.text = getString(R.string.empty_complaints_title)
-        emptyStateView.findViewById<TextView>(R.id.tvEmptyStateSubtitle)?.text = getString(R.string.empty_complaints_subtitle)
-        emptyStateView.findViewById<ImageView>(R.id.ivEmptyStateIcon)?.setImageResource(R.drawable.baseline_edit_24)
-
-        backbtn = findViewById(R.id.btn_back)
+        backbtn = findViewById(R.id.btnBack)
         backbtn.applyScaleAnimation()
         backbtn.setOnClickListener { onBackPressed() }
 
@@ -52,13 +47,13 @@ class MyComplaintsActivity : AppCompatActivity() {
 
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
         if (currentUserUid == null) {
-            showErrorSnackbar("Please login to view your complaints.")
+            Toast.makeText(this, "Please login to view your complaints.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
         // Show Initial Loading
-        loadingStateView.visibility = View.VISIBLE
+        progressBar.visibility = View.VISIBLE
         emptyStateView.visibility = View.GONE
         recyclerView.visibility = View.GONE
 
@@ -67,10 +62,10 @@ class MyComplaintsActivity : AppCompatActivity() {
             .whereEqualTo("reportedBy", currentUserUid)
             .addSnapshotListener { snapshots, e ->
                 // Hide Loading once first response arrives
-                loadingStateView.visibility = View.GONE
+                progressBar.visibility = View.GONE
 
                 if (e != null) {
-                    showErrorSnackbar("Failed to sync reports: ${e.message}")
+                    Toast.makeText(this, "Failed to sync reports: ${e.message}", Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
 

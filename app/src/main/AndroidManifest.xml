@@ -55,8 +55,20 @@
             android:name=".Mainhome"
             android:exported="true" />
         <activity
-            android:name=".MyProfileActivity"
+            android:name=".ProfileActivity"
             android:exported="true" />
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReviewQueueActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReviewDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".HomeActivity"
             android:exported="true" />
@@ -79,7 +91,13 @@
             android:name=".MainActivity"
             android:exported="true" />
         <activity
+            android:name=".StaffDashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".StaffHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminDashboardActivity"
             android:exported="false" />
         <activity
             android:name=".AdminHomeActivity"
@@ -93,6 +111,22 @@
         <activity
             android:name=".ViolationReviewActivity"
             android:exported="false" />
+        <activity
+            android:name=".UserReviewActivity"
+            android:exported="false"
+            android:label="User Review"
+            android:theme="@style/Theme.SnapFine" />
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SnapFine" />
     </application>
 
 </manifest>

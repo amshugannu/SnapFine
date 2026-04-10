@@ -126,8 +126,10 @@
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
                         android:background="@drawable/glass_input_3d"
-                        android:enabled="false"
                         android:padding="12dp"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:cursorVisible="false"
                         tools:text="10/04/2024" />
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -138,8 +140,10 @@
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
                         android:background="@drawable/glass_input_3d"
-                        android:enabled="false"
                         android:padding="12dp"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:cursorVisible="false"
                         tools:text="10:30 AM" />
                 </LinearLayout>
 
@@ -168,13 +172,20 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Hidden Fields (Retained for logic but not styled) -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:visibility="gone">
-            <com.google.android.material.textfield.TextInputEditText android:id="@+id/phoneNumberInput" />
-            <com.google.android.material.textfield.TextInputEditText android:id="@+id/uidInput" />
-        </View>
+            <com.google.android.material.textfield.TextInputEditText 
+                android:id="@+id/phoneNumberInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <com.google.android.material.textfield.TextInputEditText 
+                android:id="@+id/uidInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <!-- Submit Button -->
         <com.google.android.material.button.MaterialButton

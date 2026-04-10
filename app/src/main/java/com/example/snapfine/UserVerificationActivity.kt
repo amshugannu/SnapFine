@@ -24,8 +24,8 @@ class UserVerificationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_user_verification)
 
         // Safety check
-        if (UserSession.role != "staff") {
-            Toast.makeText(this, "Access denied. Staff only.", Toast.LENGTH_SHORT).show()
+        if (UserSession.role != "staff" && UserSession.role != "admin") {
+            Toast.makeText(this, "Access denied. Staff or Admin only.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }

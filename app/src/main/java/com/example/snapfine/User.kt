@@ -1,14 +1,21 @@
 package com.example.snapfine
 
+import com.google.firebase.firestore.PropertyName
+
 data class User(
-    val Name: String? = null,
-    val email: String? = null,
-    val phone: String? = null,
-    val role: String? = "citizen",
-    val verificationStatus: String? = "approved",
-    val adminLevel: Int? = null,
-    val VehicleNumber: String? = null,
-    val VehicleType: String? = null,
-    val VehicleRegistrationId: String? = null,
-    val licenseNumber: String? = null
+    @get:PropertyName("Name") @set:PropertyName("Name")
+    var name: String? = null,
+    
+    var email: String? = null,
+    var phone: String? = null,
+    var role: String? = "citizen",
+    var isVerified: Boolean = false,
+    var verificationStatus: String? = "pending",
+    var adminLevel: Int? = null,
+
+    var vehicleNumber: String? = null,
+    var vehicleType: String? = null,
+    var vehicleRegistrationId: String? = null,
+    var licenseNumber: String? = null,
+    var fcmToken: String? = null
 )

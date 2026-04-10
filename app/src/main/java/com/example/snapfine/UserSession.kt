@@ -20,4 +20,11 @@ object UserSession {
     fun isRejected(): Boolean {
         return verificationStatus.equals("rejected", ignoreCase = true)
     }
+
+    fun isEligibleToReport(): Boolean {
+        if (role.equals("staff", ignoreCase = true) || role.equals("admin", ignoreCase = true)) {
+            return true
+        }
+        return isApproved()
+    }
 }

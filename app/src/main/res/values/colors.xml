@@ -33,6 +33,9 @@
     <color name="statusSuccess">#4CAF50</color>
     <color name="statusError">#F44336</color>
     <color name="statusWarning">#FFC107</color>
+    <color name="statusPending">#F59E0B</color>
+    <color name="colorSelectedBG">#F3E5F5</color>
+    <color name="colorInactiveRole">#757575</color>
 
 </resources>
 

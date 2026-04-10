@@ -1,11 +1,14 @@
 package com.example.snapfine
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,13 +26,11 @@ class ReportViolationActivity : AppCompatActivity() {
     private lateinit var etDescription: EditText
     private lateinit var spinnerViolationType: Spinner
     private lateinit var btnSubmit: MaterialButton
-
-    // Hidden logic fields (retained for data mapping)
-    private lateinit var etPhoneNumber: EditText
-    private lateinit var etUidInput: EditText
+    private lateinit var progressBar: ProgressBar
 
     private var imageUri: Uri? = null
     private var selectedViolationType: String = ""
+    private var calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +39,12 @@ class ReportViolationActivity : AppCompatActivity() {
         initializeViews()
         setupSpinner()
         autoFillMetadata()
+        setupDateTimePickers()
         loadPassedImage()
 
         btnSubmit.setOnClickListener {
-            if (validateInputs()) {
-                submitReport()
+            if (validateInputs() && imageUri != null) {
+                startUploadProcess()
             }
         }
     }
@@ -57,10 +59,10 @@ class ReportViolationActivity : AppCompatActivity() {
         etDescription = findViewById(R.id.violationDescription)
         spinnerViolationType = findViewById(R.id.violationTypeSpinner)
         btnSubmit = findViewById(R.id.uploadButton)
-
-        // Map hidden fields to avoid crashes if original logic relies on them
-        etPhoneNumber = findViewById(R.id.phoneNumberInput)
-        etUidInput = findViewById(R.id.uidInput)
+        
+        // Dynamic Progress Bar setup if not in XML
+        progressBar = ProgressBar(this, null, android.R.attr.progressBarStyleLarge)
+        progressBar.visibility = View.GONE
     }
 
     private fun setupSpinner() {
@@ -81,16 +83,59 @@ class ReportViolationActivity : AppCompatActivity() {
     }
 
     private fun autoFillMetadata() {
-        val calendar = Calendar.getInstance()
-        
-        val dateSdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        etDate.setText(dateSdf.format(calendar.time))
-
-        val timeSdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
-        etTime.setText(timeSdf.format(calendar.time))
-
-        // Auto-fill location with a placeholder (in real app, use FusedLocationProvider)
+        updateDateLabel()
+        updateTimeLabel()
         etLocation.setText("Indiranagar, Bangalore")
+    }
+
+    private fun setupDateTimePickers() {
+        etDate.setOnClickListener { showDatePicker() }
+        etTime.setOnClickListener { showTimePicker() }
+    }
+
+    private fun showDatePicker() {
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            calendar.set(Calendar.YEAR, year)
+            calendar.set(Calendar.MONTH, month)
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            updateDateLabel()
+        }
+
+        DatePickerDialog(
+            this,
+            dateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
+
+    private fun showTimePicker() {
+        val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            calendar.set(Calendar.MINUTE, minute)
+            updateTimeLabel()
+        }
+
+        TimePickerDialog(
+            this,
+            timeSetListener,
+            calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.MINUTE),
+            false
+        ).show()
+    }
+
+    private fun updateDateLabel() {
+        val myFormat = "dd/MM/yyyy"
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        etDate.setText(sdf.format(calendar.time))
+    }
+
+    private fun updateTimeLabel() {
+        val myFormat = "hh:mm a"
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        etTime.setText(sdf.format(calendar.time))
     }
 
     private fun loadPassedImage() {
@@ -109,52 +154,68 @@ class ReportViolationActivity : AppCompatActivity() {
 
         val vehicleNumber = etVehicleNumber.text.toString().trim()
         if (vehicleNumber.isEmpty()) {
-            tilVehicleNumber.error = getString(R.string.error_required)
+            tilVehicleNumber.error = "Vehicle number required"
             isValid = false
         } else {
             tilVehicleNumber.error = null
         }
 
         if (selectedViolationType.isEmpty()) {
-            Toast.makeText(this, getString(R.string.label_violation_type) + " is required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Violation type is required", Toast.LENGTH_SHORT).show()
             isValid = false
         }
 
         return isValid
     }
 
-    private fun submitReport() {
+    private fun startUploadProcess() {
+        val uri = imageUri ?: return
+        
+        setLoadingState(true)
+
+        CloudinaryHelper.uploadImageToCloudinary(uri, this) { secureUrl ->
+            runOnUiThread {
+                if (secureUrl != null) {
+                    submitReportWithImageUrl(secureUrl)
+                } else {
+                    setLoadingState(false)
+                    Toast.makeText(this, "Upload failed", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun setLoadingState(isLoading: Boolean) {
+        btnSubmit.isEnabled = !isLoading
+        btnSubmit.text = if (isLoading) "Uploading Media..." else "Submit Report"
+    }
+
+    private fun submitReportWithImageUrl(cloudinaryUrl: String) {
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         
-        // Show Loading State
-        btnSubmit.isEnabled = false
-        btnSubmit.text = "Submitting..."
-
+        // Standardized field mapping as per user requirement
         val violationData = hashMapOf(
             "vehicleNumber" to etVehicleNumber.text.toString().trim().uppercase(),
             "reportedBy" to currentUserUid,
-            "evidenceUrl" to (imageUri?.toString() ?: ""),
+            "imageUrl" to cloudinaryUrl,
+            "status" to "pending",
+            "type" to selectedViolationType, // user asked: type -> violation type
             "date" to etDate.text.toString(),
             "time" to etTime.text.toString(),
             "location" to etLocation.text.toString(),
-            "violationType" to selectedViolationType,
             "description" to etDescription.text.toString(),
-            "timestamp" to System.currentTimeMillis(),
-            "status" to "reported",
-            "violatorUid" to "" // This would normally come from vehicle search logic
+            "timestamp" to calendar.timeInMillis
         )
 
         FirebaseFirestore.getInstance().collection("violations")
             .add(violationData)
             .addOnSuccessListener {
-                showSuccessSnackbar("Report submitted successfully!")
-                // Return to home or history after short delay
+                Snackbar.make(findViewById(android.R.id.content), "Report submitted successfully!", Snackbar.LENGTH_SHORT).show()
                 ivViolationPreview.postDelayed({ finish() }, 1500)
             }
             .addOnFailureListener { e ->
-                btnSubmit.isEnabled = true
-                btnSubmit.text = getString(R.string.btn_submit_report)
-                showErrorSnackbar("Submission failed: ${e.message}")
+                setLoadingState(false)
+                Snackbar.make(findViewById(android.R.id.content), "Database error: ${e.message}", Snackbar.LENGTH_SHORT).show()
             }
     }
 }

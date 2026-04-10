@@ -42,12 +42,19 @@ class UserVerificationAdapter(
             )
         }
         
-        val name = userDoc.getString("Name") ?: "Unknown User"
+        val name = userDoc.getString("name") ?: userDoc.getString("Name") ?: "Unknown User"
         val email = userDoc.getString("email") ?: "No email"
         val phone = userDoc.getString("phone") ?: "No phone"
+        val vehicle = userDoc.getString("vehicleNumber") ?: userDoc.getString("VehicleNumber") ?: userDoc.getString("Vehicle Number") ?: "N/A"
+        val vType = userDoc.getString("vehicleType") ?: userDoc.getString("VehicleType") ?: userDoc.getString("Vehicle Type") ?: ""
         
         holder.tvUserName.text = name
-        holder.tvUserDetails.text = "Email: $email\nPhone: $phone"
+        val details = if (vType.isNotEmpty()) {
+            "Email: $email\nPhone: $phone\nVehicle: $vehicle ($vType)"
+        } else {
+            "Email: $email\nPhone: $phone\nVehicle: $vehicle"
+        }
+        holder.tvUserDetails.text = details
 
         holder.btnApprove.setOnClickListener {
             onActionComplete(userDoc, true)

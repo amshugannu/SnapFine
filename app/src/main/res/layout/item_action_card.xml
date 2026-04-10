@@ -3,24 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/margin_standard"
     app:cardBackgroundColor="@color/colorCard"
-    app:cardCornerRadius="@dimen/card_radius"
-    app:cardElevation="@dimen/elevation_card">
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="@dimen/padding_large">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/ivActionIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:contentDescription="Action Icon"
-            android:src="@mipmap/appicon" />
+            android:src="@drawable/baseline_edit_24"
+            app:tint="@color/colorPrimary" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -31,27 +31,28 @@
 
             <TextView
                 android:id="@+id/tvActionTitle"
-                style="@style/SnapFine.Text.Subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Action Title"
+                android:textColor="@color/textPrimary"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvActionSubtitle"
-                style="@style/SnapFine.Text.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Action Subtitle" />
+                android:text="Action Subtitle"
+                android:textColor="@color/textSecondary"
+                android:textSize="13sp" />
 
         </LinearLayout>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/baseline_arrow_back_24"
-            android:rotation="180"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_arrow_forward"
             app:tint="@color/textSecondary" />
 
     </LinearLayout>

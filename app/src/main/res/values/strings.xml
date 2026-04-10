@@ -26,4 +26,66 @@
     <string name="error_required">Required field</string>
     <string name="error_invalid_vehicle">Invalid vehicle number format</string>
 
+    <!-- Profile Strings -->
+    <string name="title_profile">Your Profile</string>
+    <string name="label_full_name">Full Name</string>
+    <string name="label_email">Email Address</string>
+    <string name="label_phone">Phone Number</string>
+    <string name="label_vehicle_info">Vehicle Details</string>
+    <string name="label_vehicle_number">Vehicle Number</string>
+    <string name="label_vehicle_type">Vehicle Type</string>
+    <string name="label_registration_id">Registration ID</string>
+    <string name="label_license_number">License Number</string>
+    <string name="btn_edit_profile">Edit Profile</string>
+
+    <!-- Edit Profile Strings -->
+    <string name="title_edit_profile">Edit Profile</string>
+    <string name="btn_save_changes">Save Changes</string>
+    <string name="msg_profile_updated">Profile updated successfully ✨</string>
+
+    <!-- Settings Strings -->
+    <string name="title_settings">Settings</string>
+    <string name="header_account">Account</string>
+    <string name="header_app">App</string>
+    <string name="header_danger">Danger Zone</string>
+    <string name="item_logout">Logout</string>
+    <string name="item_change_password">Change Password</string>
+    <string name="item_about">About SnapFine</string>
+    <string name="item_version">App Version</string>
+    <string name="item_delete_account">Delete Account</string>
+    <string name="msg_logout_confirm">Are you sure you want to logout?</string>
+    <string name="msg_delete_confirm">This action is permanent. Delete your account?</string>
+
+    <!-- Staff Dashboard Strings -->
+    <string name="title_staff_hi">Hi, Officer 👋</string>
+    <string name="subtitle_staff_review">Review violations efficiently</string>
+    <string name="label_pending_reviews">Pending Reviews</string>
+    <string name="label_approved_today">Approved Today</string>
+    <string name="card_title_review">Review Violations</string>
+    <string name="card_subtitle_review">Check and verify reported cases</string>
+    <string name="label_user_verification">User Verification</string>
+    <string name="subtitle_user_verification">Verify new user documents</string>
+
+    <!-- Review Queue Strings -->
+    <string name="title_review_queue">Review Violations</string>
+    <string name="filter_all">All</string>
+    <string name="filter_reported">Pending</string>
+    <string name="filter_approved">Approved</string>
+    <string name="filter_rejected">Rejected</string>
+    <string name="msg_no_reports">No reports found in this category 📂</string>
+    <string name="title_review_detail">Review Detail</string>
+    <string name="label_violation_details">Violation Details</string>
+    <string name="btn_approve">Approve Violation</string>
+    <string name="btn_reject">Reject Violation</string>
+
+    <!-- Admin Dashboard Strings -->
+    <string name="title_admin_hi">Hi, Admin 👋</string>
+    <string name="subtitle_admin_manage">Manage system efficiently</string>
+    <string name="label_pending_users">Pending Users</string>
+    <string name="label_total_staff">Total Staff</string>
+    <string name="card_title_review_users">Review Users</string>
+    <string name="card_subtitle_review_users">Verify and approve new registrations</string>
+    <string name="card_title_manage_staff">Manage Staff</string>
+    <string name="card_subtitle_manage_staff">Create and oversee staff accounts</string>
+
 </resources>

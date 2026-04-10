@@ -43,7 +43,7 @@ class ViolationReviewActivity : AppCompatActivity() {
 
     private fun fetchPendingViolations() {
         firestore.collection("violations")
-            .whereEqualTo("status", "reported")
+            .whereEqualTo("status", "pending")
             .get()
             .addOnSuccessListener { querySnapshot ->
                 Log.d("ViolationReview", "Fetched ${querySnapshot.size()} reports")
